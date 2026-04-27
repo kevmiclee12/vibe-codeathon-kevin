@@ -1,6 +1,6 @@
 # Verification Layer · Private Markets Demo
 
-DEMO SCREEN RECORDING: https://www.loom.com/share/adc8209e80734b0c800c016dae633a2a
+DEMO SCREEN RECORDING: 
 
 A demo dashboard that builds a **truth layer for private markets** by
 cross-checking a GP's platform-submitted fund record against what they file
