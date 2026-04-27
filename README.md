@@ -1,5 +1,7 @@
 # Verification Layer · Private Markets Demo
 
+DEMO SCREEN RECORDING: https://www.loom.com/share/adc8209e80734b0c800c016dae633a2a
+
 A demo dashboard that builds a **truth layer for private markets** by
 cross-checking a GP's platform-submitted fund record against what they file
 with the SEC — both **EDGAR Form D** (offerings) and **IAPD** (adviser
@@ -88,14 +90,14 @@ many datapoints are Verified / Partial / Self-reported.
 
 Six KPI cards covering the headline numbers an LP scans first:
 
-| Stat | Confidence |
-| ----------------------- | ------------------------------------ |
-| Fund AUM (USD)          | tied to Fundraising Cross-check      |
-| Inception               | tied to Filing Timeline check        |
-| Minimum Investment      | tied to Minimum Investment check     |
-| Annualized Return       | self-reported (no SEC equivalent)    |
-| Largest Drawdown        | self-reported (no SEC equivalent)    |
-| Sharpe Ratio            | self-reported (no SEC equivalent)    |
+| Stat               | Confidence                        |
+| ------------------ | --------------------------------- |
+| Fund AUM (USD)     | tied to Fundraising Cross-check   |
+| Inception          | tied to Filing Timeline check     |
+| Minimum Investment | tied to Minimum Investment check  |
+| Annualized Return  | self-reported (no SEC equivalent) |
+| Largest Drawdown   | self-reported (no SEC equivalent) |
+| Sharpe Ratio       | self-reported (no SEC equivalent) |
 
 Each card carries its own confidence chip so the LP knows at a glance which
 numbers are externally verifiable and which are GP-only.
@@ -139,15 +141,15 @@ Every cross-check is scored 0–100 internally and rolled up into a weighted
 ⏳) and a confidence ring — never as a raw "credibility number" pointing
 at the GP.
 
-| # | Check                          | Weight | Source        | Comparison                                                                  |
-| - | ------------------------------ | ------ | ------------- | --------------------------------------------------------------------------- |
-| 1 | 🪪 Entity Match                | 15%    | EDGAR         | Reported fund name vs largest matching filer entity (master/feeder-aware)   |
-| 2 | 📋 ADV Registration            | 25%    | IAPD          | Reported firm legal name vs SEC-registered adviser scope + disclosure flag  |
-| 3 | 💰 Fundraising Claim           | 25%    | EDGAR Form D  | Reported AUM vs largest entity's latest `totalAmountSold` (cumulative)      |
-| 4 | 👥 Investor Count              | 15%    | EDGAR Form D  | Cumulative `totalNumberAlreadyInvested` — context, no deck-side equivalent  |
-| 5 | 💵 Minimum Investment          | 10%    | EDGAR Form D  | Reported minimum vs Form D `minimumInvestmentAccepted`                      |
-| 6 | ⏱️ Filing Timeline             | 5%     | EDGAR Form D  | Reported inception vs first → latest Form D filing series                   |
-| 7 | 🧑‍💼 Key Personnel              | 5%     | EDGAR Form D  | InvestmentTeam roster vs Form D `relatedPersonsList`                        |
+| #   | Check                 | Weight | Source       | Comparison                                                                 |
+| --- | --------------------- | ------ | ------------ | -------------------------------------------------------------------------- |
+| 1   | 🪪 Entity Match       | 15%    | EDGAR        | Reported fund name vs largest matching filer entity (master/feeder-aware)  |
+| 2   | 📋 ADV Registration   | 25%    | IAPD         | Reported firm legal name vs SEC-registered adviser scope + disclosure flag |
+| 3   | 💰 Fundraising Claim  | 25%    | EDGAR Form D | Reported AUM vs largest entity's latest `totalAmountSold` (cumulative)     |
+| 4   | 👥 Investor Count     | 15%    | EDGAR Form D | Cumulative `totalNumberAlreadyInvested` — context, no deck-side equivalent |
+| 5   | 💵 Minimum Investment | 10%    | EDGAR Form D | Reported minimum vs Form D `minimumInvestmentAccepted`                     |
+| 6   | ⏱️ Filing Timeline    | 5%     | EDGAR Form D | Reported inception vs first → latest Form D filing series                  |
+| 7   | 🧑‍💼 Key Personnel      | 5%     | EDGAR Form D | InvestmentTeam roster vs Form D `relatedPersonsList`                       |
 
 ### Numeric tolerances
 
@@ -229,14 +231,14 @@ on top of it.
 
 ## Endpoints (server)
 
-| Method | Path                                            | Purpose                                                          |
-| ------ | ----------------------------------------------- | ---------------------------------------------------------------- |
-| GET    | `/api/health`                                   | Liveness                                                         |
-| GET    | `/api/edgar/search?q=...&forms=D`               | EDGAR full-text Form D search                                    |
-| GET    | `/api/edgar/submissions/:cik`                   | Recent filings for a single CIK                                  |
-| GET    | `/api/edgar/form-d?cik=&accession=`             | Parsed Form D primary doc (XML → JSON)                           |
-| GET    | `/api/fund/overview?fund=&firm=&parseTop=`      | Composite: EDGAR search + parse top N + IAPD lookup, aggregated  |
-| GET    | `/api/iapd/firm?q=`                             | IAPD firm search (adviser registration + disclosures)            |
+| Method | Path                                       | Purpose                                                         |
+| ------ | ------------------------------------------ | --------------------------------------------------------------- |
+| GET    | `/api/health`                              | Liveness                                                        |
+| GET    | `/api/edgar/search?q=...&forms=D`          | EDGAR full-text Form D search                                   |
+| GET    | `/api/edgar/submissions/:cik`              | Recent filings for a single CIK                                 |
+| GET    | `/api/edgar/form-d?cik=&accession=`        | Parsed Form D primary doc (XML → JSON)                          |
+| GET    | `/api/fund/overview?fund=&firm=&parseTop=` | Composite: EDGAR search + parse top N + IAPD lookup, aggregated |
+| GET    | `/api/iapd/firm?q=`                        | IAPD firm search (adviser registration + disclosures)           |
 
 In-memory cache: 5 minutes for search/overview/IAPD; 24 hours for parsed
 Form Ds.
@@ -259,7 +261,7 @@ shapes GP behavior more than blunt accusations.
   than "missing 4 fields."
 
 These choices aim to make the platform feel like a **data-quality
-amplifier** — institutional-grade transparency that GPs *want* to optimize
+amplifier** — institutional-grade transparency that GPs _want_ to optimize
 toward.
 
 ---
