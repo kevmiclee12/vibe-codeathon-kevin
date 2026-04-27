@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+ * Light theme tuned to the iConnections design system
+ * (microfrontends/_design_system/vue_v3/src/foundation/colors.tokens.scss).
+ *
+ *   Page surface:    neutral-50  → #f8fafc
+ *   Brand:           purple-500  → #692b7e
+ *   Default text:    neutral-700 → #334155 (slate-700)
+ *   Heading text:    neutral-900 → #0f172a (slate-900)
+ *   Card border:     neutral-200 → #e2e8f0 (slate-200)
+ * ------------------------------------------------------------------------- */
+
 @layer base {
   html,
   body,
@@ -10,68 +21,95 @@
   }
 
   body {
+    color: theme("colors.slate.700");
     background:
-      radial-gradient(900px 600px at 10% -10%, rgba(16, 185, 129, 0.08), transparent 60%),
-      radial-gradient(900px 700px at 95% 0%, rgba(56, 189, 248, 0.08), transparent 60%),
-      #070a12;
+      radial-gradient(900px 500px at 8% -10%, rgba(105, 43, 126, 0.06), transparent 60%),
+      radial-gradient(900px 600px at 95% 0%, rgba(78, 115, 223, 0.05), transparent 60%),
+      theme("colors.surface.50");
     background-attachment: fixed;
   }
 
   ::selection {
-    background-color: rgba(16, 185, 129, 0.35);
-    color: #f8fafc;
+    background-color: rgba(105, 43, 126, 0.18);
+    color: theme("colors.slate.900");
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    color: theme("colors.slate.900");
   }
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-white/5 bg-ink-900/70 backdrop-blur-sm shadow-card;
+    @apply rounded-2xl border border-slate-200 bg-white shadow-card;
   }
   .card-pad {
     @apply p-5 sm:p-6;
   }
+
+  /* Default neutral chip */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-200 whitespace-nowrap;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 whitespace-nowrap;
   }
   .chip-green {
-    @apply chip border-accent-500/30 bg-accent-500/10 text-accent-300;
+    @apply chip border-success-200 bg-success-50 text-success-800;
   }
   .chip-amber {
-    @apply chip border-warn-500/30 bg-warn-500/10 text-warn-400;
+    @apply chip border-warn-200 bg-warn-50 text-warn-800;
   }
   .chip-red {
-    @apply chip border-danger-500/30 bg-danger-500/10 text-danger-400;
+    @apply chip border-danger-200 bg-danger-50 text-danger-800;
   }
   .chip-blue {
-    @apply chip border-sky-500/30 bg-sky-500/10 text-sky-300;
+    @apply chip border-info-200 bg-info-50 text-info-700;
   }
+  .chip-brand {
+    @apply chip border-brand-100 bg-brand-50 text-brand-700;
+  }
+
+  /* Overline / section label per medium-overline-md mixin */
   .label {
-    @apply text-[11px] uppercase tracking-[0.14em] text-slate-400 font-semibold;
+    @apply text-[11px] uppercase tracking-[0.14em] text-slate-500 font-semibold;
   }
+
+  /* Stat block (medium-headline-h3-md / regular-subtitle-md) */
   .stat {
-    @apply text-2xl font-semibold tracking-tight text-slate-50 tabular-nums;
+    @apply text-2xl font-semibold tracking-tight text-slate-900 tabular-nums;
   }
   .stat-sm {
-    @apply text-base font-semibold text-slate-100 tabular-nums;
+    @apply text-base font-semibold text-slate-800 tabular-nums;
   }
+
   .divider {
-    @apply h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent;
+    @apply h-px w-full bg-slate-200;
   }
+
+  /* Link styling — info-600 → info-700 hover, per typography-map.info */
+  .link {
+    @apply text-info-600 hover:text-info-700 transition;
+  }
+
   .scroll-fade-mask {
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
             mask-image: linear-gradient(to bottom, black 90%, transparent);
   }
 }
 
+/* Pulse used by the live SEC indicator. Hue switched from emerald to the
+ * design-system info blue so the signal reads "data feed" not "success". */
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 0 0 rgba(78, 115, 223, 0.45);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 10px rgba(78, 115, 223, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 0 rgba(78, 115, 223, 0);
   }
 }
 

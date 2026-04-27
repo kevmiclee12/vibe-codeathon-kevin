@@ -76,21 +76,21 @@ const docs = computed(() => {
       <li
         v-for="d in docs"
         :key="d.key"
-        class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-3"
+        class="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-surface-50 p-3"
       >
         <div class="min-w-0 flex flex-col gap-0.5">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-sm font-medium text-slate-100">{{ d.label }}</span>
-            <ConfidenceBadge :level="d.badge" size="xs" />
+            <span class="text-sm font-medium text-slate-900">{{ d.label }}</span>
+            <ConfidenceBadge v-if="d.badge !== 'self'" :level="d.badge" size="xs" />
           </div>
-          <p class="text-xs text-slate-400">{{ d.description }}</p>
+          <p class="text-xs text-slate-500">{{ d.description }}</p>
         </div>
         <a
           v-if="d.href"
           :href="d.href"
           target="_blank"
           rel="noreferrer noopener"
-          class="text-xs font-medium text-sky-300 hover:text-sky-200 transition whitespace-nowrap"
+          class="link text-xs font-medium whitespace-nowrap"
         >
           Open ↗
         </a>

@@ -51,14 +51,14 @@ onMounted(() => {
           Verification layer for private markets · demo build. Live data from
           <a
             href="https://www.sec.gov/edgar"
-            class="underline hover:text-slate-300"
+            class="underline hover:text-info-700"
             target="_blank"
             rel="noreferrer noopener"
           >SEC EDGAR</a>
           and
           <a
             href="https://adviserinfo.sec.gov/"
-            class="underline hover:text-slate-300"
+            class="underline hover:text-info-700"
             target="_blank"
             rel="noreferrer noopener"
           >SEC IAPD</a>.

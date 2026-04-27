@@ -11,7 +11,8 @@ const props = defineProps<{
 
 const W = computed(() => props.width ?? 120);
 const H = computed(() => props.height ?? 36);
-const stroke = computed(() => props.color ?? "#34D399");
+// Default color matches design system $success.green-600.
+const stroke = computed(() => props.color ?? "#1cc19a");
 const wantFill = computed(() => props.fill ?? true);
 
 const points = computed(() => {

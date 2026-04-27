@@ -36,25 +36,24 @@ const stats = computed(() => [
       fund.value.ManagedAccountMinimumInvestment
         ? `${fmtUSD(fund.value.ManagedAccountMinimumInvestment)} for managed accounts`
         : "LP fund minimum",
-    confidence: checkConfidence("minimumInvestment"),
   },
   {
     label: "Annualized Return",
     value: fmtPct(fund.value.AnnualizedReturn, 1),
     hint: "Net of fees, since inception",
-    confidence: "self" as ConfidenceLevel,
+    confidence: undefined as ConfidenceLevel | undefined,
   },
   {
     label: "Largest Drawdown",
     value: fmtPct(fund.value.LargestDrawdown, 1),
     hint: `${fund.value.LengthLargestDrawdown}-month length`,
-    confidence: "self" as ConfidenceLevel,
+    confidence: undefined as ConfidenceLevel | undefined,
   },
   {
     label: "Sharpe Ratio",
     value: fund.value.SharpeRatio.toFixed(2),
     hint: `Sortino ${fund.value.SortinoRatio.toFixed(2)}`,
-    confidence: "self" as ConfidenceLevel,
+    confidence: undefined as ConfidenceLevel | undefined,
   },
 ]);
 </script>

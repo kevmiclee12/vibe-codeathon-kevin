@@ -18,14 +18,14 @@ const fundraisingChipClass = computed(() => {
   switch (fund.value.FundRaisingStatus) {
     case "Open":
     case "Open to New Investors":
-      return "border-sky-500/40 bg-sky-500/10 text-sky-300";
+      return "border-info-200 bg-info-50 text-info-700";
     case "Soft Close":
-      return "border-warn-500/40 bg-warn-500/10 text-warn-400";
+      return "border-warn-200 bg-warn-50 text-warn-800";
     case "Hard Close":
     case "Closed":
-      return "border-slate-500/40 bg-slate-500/10 text-slate-300";
+      return "border-slate-200 bg-slate-50 text-slate-700";
     default:
-      return "border-slate-500/40 bg-slate-500/10 text-slate-300";
+      return "border-slate-200 bg-slate-50 text-slate-700";
   }
 });
 </script>
@@ -55,26 +55,26 @@ const fundraisingChipClass = computed(() => {
           :href="fund.Company.websiteUrl ?? '#'"
           target="_blank"
           rel="noreferrer noopener"
-          class="text-sm font-medium text-sky-300 hover:text-sky-200 transition w-fit"
+          class="link text-sm font-medium w-fit"
         >
           {{ fund.Company.name }}
         </a>
 
         <div class="flex items-start gap-3 flex-wrap">
-          <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-50">
+          <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
             {{ fund.Name }}
           </h1>
         </div>
 
-        <div class="flex items-center gap-x-3 gap-y-1 text-sm text-slate-400 flex-wrap">
+        <div class="flex items-center gap-x-3 gap-y-1 text-sm text-slate-500 flex-wrap">
           <span>{{ fund.Company.location }}</span>
-          <span class="text-slate-600">·</span>
+          <span class="text-slate-300">·</span>
           <span>Inception {{ inceptionYear }}</span>
-          <span class="text-slate-600">·</span>
+          <span class="text-slate-300">·</span>
           <span>{{ fund.Strategy }}</span>
         </div>
 
-        <p class="text-sm text-slate-300 leading-relaxed mt-1 max-w-3xl">
+        <p class="text-sm text-slate-700 leading-relaxed mt-1 max-w-3xl">
           {{ fund.ShortDescription }}
         </p>
 
@@ -95,33 +95,33 @@ const fundraisingChipClass = computed(() => {
           />
           <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
             <div
-              class="text-4xl font-semibold tabular-nums tracking-tight text-slate-50"
+              class="text-4xl font-semibold tabular-nums tracking-tight text-slate-900"
             >
               {{ verification.dataConfidence.toFixed(0) }}<span class="text-base text-slate-400">%</span>
             </div>
-            <div class="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold">
+            <div class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">
               Data confidence
             </div>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center w-full max-w-[280px]">
-          <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5">
-            <div class="text-sm font-semibold text-accent-300 tabular-nums">
+          <div class="rounded-lg border border-success-200 bg-success-50 px-2 py-1.5">
+            <div class="text-sm font-semibold text-success-800 tabular-nums">
               {{ verification.sourceCoverage.verified }}
             </div>
-            <div class="text-[10px] uppercase tracking-wide text-slate-400">Verified</div>
+            <div class="text-[10px] uppercase tracking-wide text-success-800/80">Verified</div>
           </div>
-          <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5">
-            <div class="text-sm font-semibold text-warn-400 tabular-nums">
+          <div class="rounded-lg border border-warn-200 bg-warn-50 px-2 py-1.5">
+            <div class="text-sm font-semibold text-warn-800 tabular-nums">
               {{ verification.sourceCoverage.partial }}
             </div>
-            <div class="text-[10px] uppercase tracking-wide text-slate-400">Partial</div>
+            <div class="text-[10px] uppercase tracking-wide text-warn-800/80">Partial</div>
           </div>
-          <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5">
-            <div class="text-sm font-semibold text-slate-200 tabular-nums">
+          <div class="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5">
+            <div class="text-sm font-semibold text-slate-700 tabular-nums">
               {{ verification.sourceCoverage.selfReported }}
             </div>
-            <div class="text-[10px] uppercase tracking-wide text-slate-400">Self</div>
+            <div class="text-[10px] uppercase tracking-wide text-slate-500">Self</div>
           </div>
         </div>
       </div>

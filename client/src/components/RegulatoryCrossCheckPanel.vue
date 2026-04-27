@@ -15,20 +15,20 @@ const flagSeverityMeta: Record<
 > = {
   info: {
     label: "Info",
-    chipClass: "border-sky-500/30 bg-sky-500/10 text-sky-300",
-    iconBg: "bg-sky-500/15",
+    chipClass: "border-info-200 bg-info-50 text-info-700",
+    iconBg: "bg-info-50 ring-1 ring-inset ring-info-200",
     icon: "ℹ️",
   },
   watch: {
     label: "Watch",
-    chipClass: "border-warn-500/30 bg-warn-500/10 text-warn-400",
-    iconBg: "bg-warn-500/15",
+    chipClass: "border-warn-200 bg-warn-50 text-warn-800",
+    iconBg: "bg-warn-50 ring-1 ring-inset ring-warn-200",
     icon: "⚠️",
   },
   review: {
     label: "Review",
-    chipClass: "border-danger-500/30 bg-danger-500/10 text-danger-400",
-    iconBg: "bg-danger-500/15",
+    chipClass: "border-danger-200 bg-danger-50 text-danger-800",
+    iconBg: "bg-danger-50 ring-1 ring-inset ring-danger-200",
     icon: "🔎",
   },
 };
@@ -45,7 +45,7 @@ const flagSeverityMeta: Record<
         v-if="gp.edgarLoading"
         class="chip-blue"
       >
-        <span class="h-1.5 w-1.5 rounded-full bg-sky-400 live-dot" />
+        <span class="h-1.5 w-1.5 rounded-full bg-info-500 live-dot" />
         Querying EDGAR & IAPD…
       </div>
       <div
@@ -53,7 +53,7 @@ const flagSeverityMeta: Record<
         class="chip-green"
         :title="`Last refreshed ${gp.edgarLoadedAt ?? gp.edgar.fetchedAt}`"
       >
-        <span class="h-1.5 w-1.5 rounded-full bg-accent-400 live-dot" />
+        <span class="h-1.5 w-1.5 rounded-full bg-success-600 live-dot" />
         Live SEC sources
       </div>
       <div v-else-if="gp.edgarError" class="chip-red">SEC source error</div>
@@ -65,34 +65,33 @@ const flagSeverityMeta: Record<
         v-for="c in checks"
         :key="c.key"
         :class="[
-          'rounded-xl border p-4 transition',
+          'rounded-xl border p-4 transition bg-surface-50/60',
           CONFIDENCE_META[c.confidence].rowClass,
-          'bg-white/[0.02]',
         ]"
       >
         <div class="flex items-start justify-between gap-3 flex-wrap">
           <div class="flex items-start gap-3 min-w-0">
             <div
-              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/10 text-base"
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-slate-200 text-base"
               aria-hidden="true"
             >
               {{ c.emoji }}
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-sm font-semibold text-slate-100">{{ c.label }}</h3>
+                <h3 class="text-sm font-semibold text-slate-900">{{ c.label }}</h3>
                 <ConfidenceBadge :level="c.confidence" size="xs" />
               </div>
-              <p class="mt-1 text-sm text-slate-300 leading-relaxed">{{ c.headline }}</p>
+              <p class="mt-1 text-sm text-slate-700 leading-relaxed">{{ c.headline }}</p>
               <p
                 v-if="c.explainer"
-                class="mt-1 text-xs text-slate-400 italic leading-relaxed"
+                class="mt-1 text-xs text-slate-500 italic leading-relaxed"
               >
                 {{ c.explainer }}
               </p>
             </div>
           </div>
-          <div v-if="c.delta" class="text-xs font-medium text-slate-400 whitespace-nowrap">
+          <div v-if="c.delta" class="text-xs font-medium text-slate-500 whitespace-nowrap">
             {{ c.delta }}
           </div>
         </div>
@@ -102,21 +101,21 @@ const flagSeverityMeta: Record<
           class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2"
         >
           <div
-            class="rounded-lg border border-white/10 bg-white/[0.03] p-3 flex flex-col gap-1"
+            class="rounded-lg border border-slate-200 bg-white p-3 flex flex-col gap-1"
           >
-            <div class="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-slate-400 font-semibold">
+            <div class="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-slate-500 font-semibold">
               <span aria-hidden="true">📊</span>
               GP-submitted
             </div>
-            <div class="text-sm font-medium text-slate-100 tabular-nums">
+            <div class="text-sm font-medium text-slate-900 tabular-nums">
               {{ c.reportedValue ?? "Not provided" }}
             </div>
           </div>
           <div
-            class="rounded-lg border border-white/10 bg-white/[0.03] p-3 flex flex-col gap-1"
+            class="rounded-lg border border-slate-200 bg-white p-3 flex flex-col gap-1"
           >
             <div
-              class="flex items-center justify-between gap-2 text-[10px] uppercase tracking-wide text-slate-400 font-semibold"
+              class="flex items-center justify-between gap-2 text-[10px] uppercase tracking-wide text-slate-500 font-semibold"
             >
               <span class="flex items-center gap-1.5">
                 <span aria-hidden="true">🏛️</span>
@@ -127,12 +126,12 @@ const flagSeverityMeta: Record<
                 :href="c.externalUrl"
                 target="_blank"
                 rel="noreferrer noopener"
-                class="text-sky-300 hover:text-sky-200 transition normal-case font-medium"
+                class="link normal-case font-medium"
               >
                 Open ↗
               </a>
             </div>
-            <div class="text-sm font-medium text-slate-100 tabular-nums">
+            <div class="text-sm font-medium text-slate-900 tabular-nums">
               {{ c.externalValue ?? "Not available" }}
             </div>
           </div>
@@ -143,13 +142,13 @@ const flagSeverityMeta: Record<
     <!-- Discrepancy flags -->
     <div
       v-if="flags.length"
-      class="mt-6 border-t border-white/5 pt-5 flex flex-col gap-2"
+      class="mt-6 border-t border-slate-200 pt-5 flex flex-col gap-2"
     >
       <h3 class="label flex items-center gap-2">
         <span aria-hidden="true">🚩</span>
         Data discrepancy flags
       </h3>
-      <p class="text-xs text-slate-400 max-w-3xl">
+      <p class="text-xs text-slate-500 max-w-3xl">
         Each flag describes a data difference, not a verdict on the GP. Common causes include
         timing, master/feeder structure, side-letter terms, or the cumulative nature of Form D.
       </p>
@@ -157,7 +156,7 @@ const flagSeverityMeta: Record<
         <li
           v-for="f in flags"
           :key="f.id"
-          class="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-3"
+          class="flex items-start gap-3 rounded-lg border border-slate-200 bg-surface-50 p-3"
         >
           <span
             :class="[
@@ -170,7 +169,7 @@ const flagSeverityMeta: Record<
           </span>
           <div class="min-w-0 flex flex-col gap-0.5">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm font-medium text-slate-100">{{ f.title }}</span>
+              <span class="text-sm font-medium text-slate-900">{{ f.title }}</span>
               <span
                 :class="[
                   'inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
@@ -180,7 +179,16 @@ const flagSeverityMeta: Record<
                 {{ flagSeverityMeta[f.severity].label }}
               </span>
             </div>
-            <p class="text-xs text-slate-400 leading-relaxed">{{ f.detail }}</p>
+            <p class="text-xs text-slate-600 leading-relaxed">{{ f.detail }}</p>
+            <a
+              v-if="f.actionUrl"
+              :href="f.actionUrl"
+              target="_blank"
+              rel="noreferrer noopener"
+              class="link text-xs font-medium mt-0.5 self-start"
+            >
+              {{ f.actionLabel ?? "Open source ↗" }}
+            </a>
           </div>
         </li>
       </ul>

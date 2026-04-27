@@ -46,6 +46,16 @@ export function fmtPct(n?: number, digits = 1): string {
   return `${n.toFixed(digits)}%`;
 }
 
+// Human-friendly EDGAR filing index page — lists every document in the
+// filing (primary_doc.xml, headers, raw SGML submission) and is the page
+// users typically reach from EDGAR search results.
+export function filingIndexUrl(cik?: string, accessionNo?: string): string | undefined {
+  if (!cik || !accessionNo) return undefined;
+  const cikNum = String(parseInt(cik, 10));
+  const accNoStripped = accessionNo.replace(/-/g, "");
+  return `https://www.sec.gov/Archives/edgar/data/${cikNum}/${accNoStripped}/${accessionNo}-index.htm`;
+}
+
 // Form D amendments are cumulative. Keep only the latest filing per CIK.
 export function latestPerEntity<T extends { cik: string; filedAt?: string }>(
   funds: T[],
@@ -204,9 +214,7 @@ function assessEntityMatch(
       ? `${master.entityName} · CIK ${master.cik.padStart(10, "0")}`
       : `${distinctEntities} entit${distinctEntities === 1 ? "y" : "ies"}`,
     externalSource: "SEC EDGAR",
-    externalUrl: master
-      ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${master.cik}&type=D&dateb=&owner=include&count=40`
-      : undefined,
+    externalUrl: filingIndexUrl(master?.cik, master?.accessionNo),
     internalScore: scoreFromConfidence(confidence),
     reportedCovered: true,
     externalCovered: true,
@@ -369,9 +377,7 @@ function assessCapitalRaised(
     reportedValue: fmtUSD(reported),
     externalValue: fmtUSD(externalRaised),
     externalSource: "SEC Form D",
-    externalUrl: master
-      ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${master.cik}&type=D&dateb=&owner=include&count=40`
-      : undefined,
+    externalUrl: filingIndexUrl(master?.cik, master?.accessionNo),
     delta: deltaLabel(reported, externalRaised),
     internalScore,
     reportedCovered: true,
@@ -436,146 +442,14 @@ function assessInvestorCount(
       "GPs typically don't publish current LP counts. The Form D figure is cumulative across all investors who've ever subscribed to this entity.",
     externalValue: `${externalInvestors.toLocaleString()} cumulative investors`,
     externalSource,
-    externalUrl: master
-      ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${master.cik}&type=D&dateb=&owner=include&count=40`
-      : undefined,
+    externalUrl: filingIndexUrl(master?.cik, master?.accessionNo),
     internalScore: 60,
     reportedCovered: false,
     externalCovered: true,
   };
 }
 
-function assessMinimumInvestment(
-  fund: HedgeFund,
-  edgar?: FundOverview,
-): RegulatoryCheck {
-  const reported = fund.MinimumInvestment;
-  const reportedCovered = typeof reported === "number" && reported > 0;
 
-  if (!edgar) {
-    return {
-      key: "minimumInvestment",
-      label: "Minimum Investment Cross-check",
-      emoji: "💵",
-      confidence: "loading",
-      headline: "Awaiting Form D minimum-investment disclosure…",
-      reportedValue: reportedCovered ? fmtUSD(reported) : undefined,
-      internalScore: 50,
-      reportedCovered,
-      externalCovered: false,
-    };
-  }
-
-  const master = largestLatestFund(edgar.parsedFunds);
-  const external = master?.minimumInvestmentAccepted;
-  const externalCovered = typeof external === "number";
-
-  if (!reportedCovered && !externalCovered) {
-    return {
-      key: "minimumInvestment",
-      label: "Minimum Investment Cross-check",
-      emoji: "💵",
-      confidence: "pending",
-      headline: "Not disclosed in deck or filings.",
-      internalScore: 0,
-      reportedCovered: false,
-      externalCovered: false,
-    };
-  }
-
-  if (!externalCovered) {
-    return {
-      key: "minimumInvestment",
-      label: "Minimum Investment Cross-check",
-      emoji: "💵",
-      confidence: "self",
-      headline: `${fmtUSD(reported)} reported · no Form D minimum disclosed.`,
-      explainer: "Form D allows the issuer to state $0; many private funds use side-letters and waive the minimum case-by-case.",
-      reportedValue: fmtUSD(reported),
-      externalSource: "SEC Form D",
-      internalScore: 55,
-      reportedCovered: true,
-      externalCovered: false,
-    };
-  }
-
-  if (!reportedCovered) {
-    return {
-      key: "minimumInvestment",
-      label: "Minimum Investment Cross-check",
-      emoji: "💵",
-      confidence: "self",
-      headline: `Form D minimum ${fmtUSD(external!)} · not disclosed in deck.`,
-      externalValue: fmtUSD(external!),
-      externalSource: "SEC Form D",
-      internalScore: 55,
-      reportedCovered: false,
-      externalCovered: true,
-    };
-  }
-
-  if (reported === 0 && external === 0) {
-    return {
-      key: "minimumInvestment",
-      label: "Minimum Investment Cross-check",
-      emoji: "💵",
-      confidence: "verified",
-      headline: "No minimum disclosed in either source.",
-      reportedValue: "$0 / not specified",
-      externalValue: "$0 / not specified",
-      externalSource: "SEC Form D",
-      internalScore: 100,
-      reportedCovered: true,
-      externalCovered: true,
-    };
-  }
-
-  // Form D commonly reports a $0 minimum even when the GP enforces one in
-  // side-letters. Treat reported>0 / Form D=$0 as self-reported context, not
-  // a discrepancy.
-  if (reported! > 0 && external === 0) {
-    return {
-      key: "minimumInvestment",
-      label: "Minimum Investment Cross-check",
-      emoji: "💵",
-      confidence: "self",
-      headline: `${fmtUSD(reported)} reported · Form D states $0 / not specified.`,
-      explainer:
-        "Form D allows the issuer to leave the minimum at $0; many private funds use side-letters and waive minimums case-by-case.",
-      reportedValue: fmtUSD(reported),
-      externalValue: "$0 / not specified",
-      externalSource: "SEC Form D",
-      internalScore: 60,
-      reportedCovered: true,
-      externalCovered: true,
-    };
-  }
-
-  const reportedN = reported as number;
-  const externalN = external as number;
-  const ratio = externalN / Math.max(1, reportedN);
-  const drift = Math.abs(1 - ratio);
-  const confidence = confidenceFromDrift(drift);
-
-  return {
-    key: "minimumInvestment",
-    label: "Minimum Investment Cross-check",
-    emoji: "💵",
-    confidence,
-    headline:
-      confidence === "verified"
-        ? `${fmtUSD(reportedN)} reported · matches Form D.`
-        : `${fmtUSD(reportedN)} reported · ${fmtUSD(externalN)} on Form D.`,
-    explainer: softExplainerForDrift(drift * 100),
-    reportedValue: fmtUSD(reportedN),
-    externalValue: fmtUSD(externalN),
-    externalSource: "SEC Form D",
-    delta: deltaLabel(reportedN, externalN),
-    internalScore: scoreFromConfidence(confidence, drift),
-    reportedCovered: true,
-    externalCovered: true,
-  };
-}
 
 function assessFilingTimeline(
   fund: HedgeFund,
@@ -639,9 +513,7 @@ function assessFilingTimeline(
     reportedValue: reportedInception,
     externalValue: `${series.length} filings · last ${latestFiling.date}`,
     externalSource: "SEC Form D",
-    externalUrl: master
-      ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${master.cik}&type=D&dateb=&owner=include&count=40`
-      : undefined,
+    externalUrl: filingIndexUrl(master?.cik, master?.accessionNo),
     internalScore: 100,
     reportedCovered,
     externalCovered: true,
@@ -670,6 +542,7 @@ function assessKeyPersonnel(
     };
   }
 
+  const master = largestLatestFund(edgar.parsedFunds);
   const externalNames = new Set<string>();
   for (const f of edgar.parsedFunds) {
     for (const p of f.relatedPersons) {
@@ -688,6 +561,7 @@ function assessKeyPersonnel(
         "No related persons disclosed in matching SEC filings — Form D often lists management entities rather than individuals.",
       reportedValue: `${team.length} listed`,
       externalSource: "SEC Form D",
+      externalUrl: filingIndexUrl(master?.cik, master?.accessionNo),
       internalScore: 55,
       reportedCovered,
       externalCovered: false,
@@ -716,6 +590,7 @@ function assessKeyPersonnel(
     reportedValue: `${team.length} listed`,
     externalValue: `${externalNames.size} related person/entit${externalNames.size === 1 ? "y" : "ies"}`,
     externalSource: "SEC Form D",
+    externalUrl: filingIndexUrl(master?.cik, master?.accessionNo),
     internalScore: clamp(60 + overlap * 40),
     reportedCovered: true,
     externalCovered: true,
@@ -742,6 +617,10 @@ function buildFlags(checks: RegulatoryCheck[]): VerificationProfile["flags"] {
         severity: "watch",
         title: c.label,
         detail: c.explainer ?? c.headline,
+        actionUrl: c.externalUrl,
+        actionLabel: c.externalUrl
+          ? `Open ${c.externalSource ?? "source"} ↗`
+          : undefined,
       });
     }
     if (c.confidence === "pending") {
@@ -753,11 +632,24 @@ function buildFlags(checks: RegulatoryCheck[]): VerificationProfile["flags"] {
       });
     }
     if (c.key === "advRegistration" && c.detail?.hasDisclosures === true) {
+      // The IAPD profile is where the actual disclosure events are listed
+      // (under the "Disclosures" tab); the Part-2 brochure is a strategy
+      // document. Prefer the profile, fall back to the brochure if the
+      // profile URL isn't populated for some reason.
+      const profileUrl = c.externalUrl;
+      const brochureUrl = (c.detail?.advBrochureUrl as string) || undefined;
+      const actionUrl = profileUrl ?? brochureUrl;
       flags.push({
         id: `flag-adv-disclosures`,
         severity: "review",
         title: "ADV disclosures on file",
-        detail: "IAPD shows one or more disclosure events on the firm's ADV. Review the brochure for context before evaluating.",
+        detail: "IAPD shows one or more disclosure events on the firm's ADV. Review the IAPD profile for context before evaluating.",
+        actionUrl,
+        actionLabel: profileUrl
+          ? "Open IAPD profile ↗"
+          : brochureUrl
+            ? "Open ADV brochure ↗"
+            : undefined,
       });
     }
   }
@@ -774,7 +666,6 @@ export function computeVerificationProfile(
     assessAdvRegistration(fund, edgar),
     assessCapitalRaised(fund, edgar),
     assessInvestorCount(fund, edgar),
-    assessMinimumInvestment(fund, edgar),
     assessFilingTimeline(fund, edgar),
     assessKeyPersonnel(fund, edgar),
   ];
@@ -823,6 +714,9 @@ export function computeVerificationProfile(
 // Confidence presentation helpers
 // ---------------------------------------------------------------------------
 
+// Tones map to the design system's $background-map / $border-map / $typography-map.
+// `dot`, `chipClass`, and `rowClass` consume the `success` / `warn` / `danger`
+// / `info` / `slate` palettes defined in `tailwind.config.js`.
 export const CONFIDENCE_META: Record<
   ConfidenceLevel,
   { label: string; tooltip: string; dot: string; chipClass: string; rowClass: string }
@@ -830,40 +724,44 @@ export const CONFIDENCE_META: Record<
   verified: {
     label: "Verified",
     tooltip: "GP-submitted value aligns with the regulatory source.",
-    dot: "bg-accent-400",
-    chipClass: "border-accent-500/30 bg-accent-500/10 text-accent-300",
-    rowClass: "border-accent-500/20",
+    dot: "bg-success-600",
+    chipClass: "border-success-200 bg-success-50 text-success-800",
+    rowClass: "border-success-200",
   },
   partial: {
     label: "Partially Verified",
     tooltip: "Regulatory source exists with material drift; review for context.",
-    dot: "bg-warn-400",
-    chipClass: "border-warn-500/30 bg-warn-500/10 text-warn-400",
-    rowClass: "border-warn-500/20",
+    dot: "bg-warn-500",
+    chipClass: "border-warn-200 bg-warn-50 text-warn-800",
+    rowClass: "border-warn-200",
   },
   self: {
     label: "Self-reported",
     tooltip: "Provided by the GP, not independently verified.",
     dot: "bg-slate-400",
-    chipClass: "border-slate-500/30 bg-slate-500/10 text-slate-300",
-    rowClass: "border-slate-500/20",
+    chipClass: "border-slate-200 bg-slate-50 text-slate-700",
+    rowClass: "border-slate-200",
   },
   pending: {
     label: "Not yet disclosed",
     tooltip: "This datapoint hasn't been provided yet.",
-    dot: "bg-slate-600",
-    chipClass: "border-white/10 bg-white/5 text-slate-400",
-    rowClass: "border-white/5",
+    dot: "bg-slate-300",
+    chipClass: "border-slate-200 bg-white text-slate-500",
+    rowClass: "border-slate-200",
   },
   loading: {
     label: "Loading…",
     tooltip: "Fetching data from regulatory sources.",
-    dot: "bg-sky-400",
-    chipClass: "border-sky-500/30 bg-sky-500/10 text-sky-300",
-    rowClass: "border-sky-500/20",
+    dot: "bg-info-500",
+    chipClass: "border-info-200 bg-info-50 text-info-700",
+    rowClass: "border-info-200",
   },
 };
 
+// Ring colors come straight from the design-system colors.tokens.scss palette:
+//   success.green-600  → #1cc19a
+//   warning.orange-500 → #f0a410
+//   neutral.neutral-400 → #94a3b8
 export const TIER_META: Record<
   VerificationTier,
   { label: string; emoji: string; tooltip: string; chipClass: string; ringColor: string }
@@ -872,21 +770,21 @@ export const TIER_META: Record<
     label: "Fully Verified",
     emoji: "🟢",
     tooltip: "Most key datapoints align with regulatory filings.",
-    chipClass: "border-accent-500/40 bg-accent-500/10 text-accent-300",
-    ringColor: "#34D399",
+    chipClass: "border-success-200 bg-success-50 text-success-800",
+    ringColor: "#1cc19a",
   },
   partially: {
     label: "Partially Verified",
     emoji: "🟡",
     tooltip: "Some datapoints are GP-disclosed with limited third-party validation.",
-    chipClass: "border-warn-500/40 bg-warn-500/10 text-warn-400",
-    ringColor: "#F59E0B",
+    chipClass: "border-warn-200 bg-warn-50 text-warn-800",
+    ringColor: "#f0a410",
   },
   self: {
     label: "Self-reported Profile",
     emoji: "⚪",
     tooltip: "Most datapoints are provided by the GP and not independently verified.",
-    chipClass: "border-slate-500/40 bg-slate-500/10 text-slate-300",
-    ringColor: "#94A3B8",
+    chipClass: "border-slate-200 bg-slate-50 text-slate-700",
+    ringColor: "#94a3b8",
   },
 };

@@ -17,11 +17,11 @@ const personnelCheck = computed(() =>
     title="Investment team"
     subtitle="GP-submitted partner roster. Where Form D discloses related persons, those names are corroborated against the deck."
   >
-    <template #header-right>
+    <template #title-chip>
       <ConfidenceBadge :level="personnelCheck?.confidence ?? 'self'" size="xs" />
     </template>
 
-    <ul class="flex flex-col divide-y divide-white/5">
+    <ul class="flex flex-col divide-y divide-slate-200">
       <li
         v-for="m in fund.InvestmentTeam"
         :key="m.name"
@@ -30,21 +30,21 @@ const personnelCheck = computed(() =>
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <div class="flex items-center gap-3">
             <div
-              class="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm text-slate-200 font-semibold"
+              class="flex h-9 w-9 items-center justify-center rounded-full border border-brand-100 bg-brand-50 text-sm text-brand-700 font-semibold"
               aria-hidden="true"
             >
               {{ m.name.split(" ").map((s) => s[0]).slice(0, 2).join("") }}
             </div>
             <div>
-              <div class="text-sm font-medium text-slate-100">{{ m.name }}</div>
-              <div class="text-xs text-slate-400">{{ m.title }}</div>
+              <div class="text-sm font-medium text-slate-900">{{ m.name }}</div>
+              <div class="text-xs text-slate-500">{{ m.title }}</div>
             </div>
           </div>
-          <div class="text-xs text-slate-400">
+          <div class="text-xs text-slate-500">
             {{ m.tenureYears }} yrs at firm
           </div>
         </div>
-        <p v-if="m.bio" class="text-xs text-slate-400 leading-relaxed pl-12">
+        <p v-if="m.bio" class="text-xs text-slate-600 leading-relaxed pl-12">
           {{ m.bio }}
         </p>
       </li>

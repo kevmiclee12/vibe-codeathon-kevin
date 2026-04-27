@@ -15,8 +15,9 @@ const circumference = computed(() => 2 * Math.PI * radius.value);
 const dashOffset = computed(
   () => circumference.value * (1 - Math.max(0, Math.min(100, props.score)) / 100),
 );
-const stroke = computed(() => props.color ?? "#34D399");
-const track = computed(() => props.trackColor ?? "rgba(148,163,184,0.12)");
+// Defaults map to design system $success.green-600 + $neutral.neutral-200.
+const stroke = computed(() => props.color ?? "#1cc19a");
+const track = computed(() => props.trackColor ?? "#e2e8f0");
 
 const id = computed(() => `score-grad-${(stroke.value || "").replace("#", "")}-${Math.round(props.score)}`);
 </script>

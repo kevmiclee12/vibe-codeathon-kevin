@@ -2,7 +2,6 @@
 import { computed } from "vue";
 import { useGPStore } from "@/stores/gp";
 import SectionShell from "../ui/SectionShell.vue";
-import ConfidenceBadge from "../ui/ConfidenceBadge.vue";
 import { fmtPct, fmtUSD } from "@/services/verification";
 
 const gp = useGPStore();
@@ -31,18 +30,14 @@ const rows = computed(() => [
     title="Performance & risk"
     subtitle="Self-reported by the GP. The SEC does not publish private-fund performance figures, so these values cannot be cross-checked externally."
   >
-    <template #header-right>
-      <ConfidenceBadge level="self" size="xs" />
-    </template>
-
     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
       <div
         v-for="r in rows"
         :key="r.key"
-        class="flex items-start justify-between gap-3 border-b border-white/5 pb-2"
+        class="flex items-start justify-between gap-3 border-b border-slate-200 pb-2"
       >
-        <dt class="text-sm text-slate-400">{{ r.key }}</dt>
-        <dd class="text-sm font-medium text-slate-100 tabular-nums">{{ r.value }}</dd>
+        <dt class="text-sm text-slate-500">{{ r.key }}</dt>
+        <dd class="text-sm font-medium text-slate-900 tabular-nums">{{ r.value }}</dd>
       </div>
     </dl>
 

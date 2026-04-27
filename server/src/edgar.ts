@@ -427,7 +427,15 @@ export async function fetchFundOverview(
     searchIapdFirms(firmQuery),
   ]);
 
-  const top = search.hits.slice(0, parseTop);
+  // EDGAR's full-text search returns hits in relevance order, not strict
+  // date-desc, so the absolute latest filing isn't guaranteed to be in the
+  // first N hits. Sort by filedAt before slicing so the parsed set always
+  // corresponds to the most recent filings (matches what the client renders
+  // in the raw EDGAR hits table).
+  const sortedHits = [...search.hits].sort((a, b) =>
+    (b.filedAt ?? "").localeCompare(a.filedAt ?? ""),
+  );
+  const top = sortedHits.slice(0, parseTop);
   const parsedFunds: FormDData[] = [];
   const parseErrors: FundOverview["parseErrors"] = [];
 

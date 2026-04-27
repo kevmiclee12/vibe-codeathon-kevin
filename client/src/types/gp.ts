@@ -324,6 +324,9 @@ export interface VerificationProfile {
     severity: "info" | "watch" | "review";
     title: string;
     detail: string;
+    /** Optional CTA pointing at the regulatory source the LP can review. */
+    actionUrl?: string;
+    actionLabel?: string;
   }>;
 
   sourceCoverage: {
